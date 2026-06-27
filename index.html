@@ -238,10 +238,10 @@
             <div class="divider"></div>
         </div>
         <div class="filter-bar">
-            <button class="filter-btn active" data-filter="all">全部 (12)</button>
+            <button class="filter-btn active" data-filter="all">全部 (14)</button>
             <button class="filter-btn" data-filter="pdf">PDF图文 (5)</button>
             <button class="filter-btn" data-filter="pptx">PPT展示 (3)</button>
-            <button class="filter-btn" data-filter="mp4">视频游记 (4)</button>
+            <button class="filter-btn" data-filter="video">视频游记 (6)</button>
         </div>
         <div class="travelogue-grid" id="travelogueGrid"></div>
     </div>
@@ -353,7 +353,7 @@
         }
 
         function renderTravelogues() {
-            const filtered = currentFilter === 'all' ? travelogues : travelogues.filter(t => t.type === currentFilter);
+            const filtered = currentFilter === 'all' ? travelogues : currentFilter === 'video' ? travelogues.filter(t => t.type === 'mp4' || t.type === 'mov') : travelogues.filter(t => t.type === currentFilter);
             document.getElementById('travelogueGrid').innerHTML = filtered.map(t => {
                 const thumb = thumbnails[t.id] || '';
                 return `
