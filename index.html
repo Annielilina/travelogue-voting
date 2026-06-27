@@ -186,6 +186,59 @@
         .success-card p { font-size: 15px; color: var(--text-light); line-height: 1.7; }
         .success-card .vote-info { background: #f8f9fa; border-radius: 12px; padding: 14px; margin: 20px 0; font-size: 13px; color: var(--text-light); line-height: 1.8; }
         .btn-home { padding: 12px 32px; border: none; border-radius: 50px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; font-size: 14px; font-weight: 700; cursor: pointer; }
+        /* PDF Preview Modal */
+        .pdf-preview-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); z-index: 3000;
+            display: none; align-items: center; justify-content: center;
+            padding: 24px; backdrop-filter: blur(6px);
+        }
+        .pdf-preview-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+        .pdf-preview-modal {
+            width: 92%; max-width: 1100px; height: 88vh;
+            background: #1a1a1a; border-radius: 16px;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .pdf-preview-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 20px; background: #2a2a2a; color: white;
+            border-radius: 16px 16px 0 0; flex-shrink: 0;
+        }
+        .pdf-preview-header .title { font-size: 15px; font-weight: 700; }
+        .pdf-preview-header .actions { display: flex; gap: 10px; align-items: center; }
+        .pdf-preview-header .actions a {
+            color: #aaa; text-decoration: none; font-size: 13px;
+            padding: 6px 14px; border-radius: 8px; background: #3a3a3a;
+            transition: all 0.2s;
+        }
+        .pdf-preview-header .actions a:hover { background: #4a4a4a; color: white; }
+        .pdf-preview-close {
+            width: 34px; height: 34px; border: none; border-radius: 50%;
+            background: #3a3a3a; color: white; font-size: 16px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .pdf-preview-close:hover { background: #e74c3c; }
+        .pdf-preview-body { flex: 1; position: relative; background: #f5f5f5; }
+        .pdf-preview-frame {
+            width: 100%; height: 100%; border: none; display: none;
+        }
+        .pdf-preview-loading {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center; color: #888;
+        }
+        .pdf-preview-loading .spinner {
+            width: 44px; height: 44px; margin: 0 auto 16px;
+            border: 4px solid #ddd; border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 640px) {
+            .pdf-preview-modal { width: 100%; height: 100vh; border-radius: 0; }
+            .pdf-preview-header { border-radius: 0; }
+        }
         .footer { background: var(--primary); color: rgba(255,255,255,0.8); text-align: center; padding: 36px 24px; margin-top: 48px; }
         .footer h3 { color: white; font-size: 20px; margin-bottom: 10px; }
         .footer p { font-size: 14px; margin-bottom: 6px; }
@@ -303,6 +356,26 @@
             <p>感谢您参与2025年度游记评选！<br>您仍可修改投票，修改后再次提交即可。</p>
             <div class="vote-info" id="successInfo"></div>
             <button class="btn-home" onclick="closeSuccess()">返回继续投票</button>
+        </div>
+    </div>
+
+    <div class="pdf-preview-overlay" id="pdfPreviewOverlay">
+        <div class="pdf-preview-modal">
+            <div class="pdf-preview-header">
+                <span class="title" id="pdfPreviewTitle">📂 游记预览</span>
+                <div class="actions">
+                    <a id="pdfPreviewOpenExt" href="#" target="_blank">🔗 新窗口打开</a>
+                    <button class="pdf-preview-close" id="pdfPreviewClose">✕</button>
+                </div>
+            </div>
+            <div class="pdf-preview-body">
+                <div class="pdf-preview-loading" id="pdfPreviewLoading">
+                    <div class="spinner"></div>
+                    <p>正在加载游记，请稍候…</p>
+                    <p style="font-size:12px;color:#aaa;margin-top:8px;">首次加载可能需要几秒钟</p>
+                </div>
+                <iframe id="pdfPreviewFrame" class="pdf-preview-frame"></iframe>
+            </div>
         </div>
     </div>
 
@@ -519,6 +592,63 @@
         function closeSuccess() {
             document.getElementById('successOverlay').classList.remove('show');
         }
+
+        // PDF Preview Modal
+        function isPdfOrPptx(url) {
+            return url && (url.includes('/:b:') || url.includes('/:p:'));
+        }
+        function openPdfPreview(url, title) {
+            const overlay = document.getElementById('pdfPreviewOverlay');
+            const frame = document.getElementById('pdfPreviewFrame');
+            const loading = document.getElementById('pdfPreviewLoading');
+            const titleEl = document.getElementById('pdfPreviewTitle');
+            const extLink = document.getElementById('pdfPreviewOpenExt');
+            titleEl.textContent = '📂 ' + (title || '游记预览');
+            extLink.href = url;
+            loading.style.display = 'block';
+            frame.style.display = 'none';
+            frame.src = url;
+            overlay.classList.add('show');
+            // Hide loading when iframe loads
+            frame.onload = function() {
+                loading.style.display = 'none';
+                frame.style.display = 'block';
+            };
+            // Fallback: hide loading after 8s
+            setTimeout(function() {
+                loading.style.display = 'none';
+                frame.style.display = 'block';
+            }, 8000);
+        }
+        function closePdfPreview() {
+            const overlay = document.getElementById('pdfPreviewOverlay');
+            const frame = document.getElementById('pdfPreviewFrame');
+            overlay.classList.remove('show');
+            frame.src = '';
+        }
+        document.getElementById('pdfPreviewClose').onclick = closePdfPreview;
+        document.getElementById('pdfPreviewOverlay').onclick = function(e) {
+            if (e.target === this) closePdfPreview();
+        };
+
+        // Intercept "打开游记" link clicks: open PDF/PPTX in modal, videos in new tab
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('.card-open-file, .modal-open-file');
+            if (!link) return;
+            const url = link.href || link.getAttribute('href');
+            if (!url || url === '#') return;
+            if (isPdfOrPptx(url)) {
+                e.preventDefault();
+                const card = link.closest('.travelogue-card, .modal');
+                let title = '游记预览';
+                if (card) {
+                    const destEl = card.querySelector('.card-destination, #modalTitle');
+                    if (destEl) title = destEl.textContent || '游记预览';
+                }
+                openPdfPreview(url, title);
+            }
+            // For videos (/:v:), let default behavior (open in new tab) happen
+        });
 
         function updateAdminStats() {
             const subs = getSubmissions();
