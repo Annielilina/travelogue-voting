@@ -325,8 +325,8 @@
     <div class="success-overlay" id="successOverlay">
         <div class="success-card">
             <div class="success-icon">🎉</div>
-            <h2>投票提交成功！</h2>
-            <p>感谢您参与2025年度游记评选！<br>您仍可修改投票，修改后再次提交即可。</p>
+            <h2 id="successTitle">投票提交成功！</h2>
+            <p id="successDesc">感谢您参与2025年度游记评选！<br>您仍可修改投票，修改后再次提交即可。</p>
             <div class="vote-info" id="successInfo"></div>
             <button class="btn-home" onclick="closeSuccess()">返回修改投票</button>
         </div>
@@ -568,11 +568,21 @@
             })
             .then(function(data) {
                 closeSubmitModal();
+                // Check if this is a modification (voter info already saved)
+                const prevInfo = localStorage.getItem('travelogueVoterInfo');
+                const isModify = prevInfo && JSON.parse(prevInfo).name === name && JSON.parse(prevInfo).dept === dept;
                 // Save voter info for next time
                 localStorage.setItem('travelogueVoterInfo', JSON.stringify({ name: name, dept: dept }));
-                // Show success overlay
+                // Show success overlay with appropriate message
+                if (isModify) {
+                    document.getElementById('successTitle').textContent = '投票结果修改成功！';
+                    document.getElementById('successDesc').innerHTML = '您的投票已更新，感谢参与！<br>投票截止时间前仍可继续修改。';
+                } else {
+                    document.getElementById('successTitle').textContent = '投票提交成功！';
+                    document.getElementById('successDesc').innerHTML = '感谢您参与2025年度游记评选！<br>您仍可修改投票，修改后再次提交即可。';
+                }
                 document.getElementById('successInfo').innerHTML =
-                    '投票人：' + name + '<br>部门：' + dept + '<br>时间：' + timestamp + '<br>共投 ' + Object.keys(votes).length + ' 票<br><br>您可以在投票截止时间前修改投票，修改后再次提交即可。';
+                    '投票人：' + name + '<br>部门：' + dept + '<br>时间：' + timestamp + '<br>共投 ' + Object.keys(votes).length + ' 票';
                 document.getElementById('successOverlay').classList.add('show');
                 updateUI();
             })
