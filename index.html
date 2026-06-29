@@ -214,8 +214,8 @@
                 <div class="rules-title">🗳️ 投票须知</div>
                 <div class="rules-list">
                     <div class="rule-item"><span class="rule-num">1</span>投票时间：即日起 至 2026年X月X日 24:00 截止</div>
-                    <div class="rule-item"><span class="rule-num">2</span>每人票数：最多 4票（每个奖项限投1票，4票须投给4个不同的旅游团）</div>
-                    <div class="rule-item"><span class="rule-num">3</span>限制规则：同一旅游团不能重复获得您的多票，请为4个不同的团各投一票</div>
+                    <div class="rule-item"><span class="rule-num">2</span>每人票数：4票（每个奖项限投1票）</div>
+                    <div class="rule-item"><span class="rule-num">3</span>限制规则：4个奖项必须分别投给4个不同的旅游团，给更多优秀团队一个机会</div>
                 </div>
             </div>
         </div>
@@ -300,7 +300,7 @@
             <h2>投票提交成功！</h2>
             <p>感谢您参与2025年度游记评选！<br>您仍可修改投票，修改后再次提交即可。</p>
             <div class="vote-info" id="successInfo"></div>
-            <button class="btn-home" onclick="closeSuccess()">返回继续投票</button>
+            <button class="btn-home" onclick="closeSuccess()">返回修改投票</button>
         </div>
     </div>
 
@@ -508,7 +508,7 @@
 
             // Show success overlay
             document.getElementById('successInfo').innerHTML =
-                `投票人：${name}<br>部门：${dept}<br>时间：${timestamp}<br>共投 ${Object.keys(votes).length} 票<br><br>💡 您可以随时修改投票，修改后再次提交即可。`;
+                `投票人：${name}<br>部门：${dept}<br>时间：${timestamp}<br>共投 ${Object.keys(votes).length} 票<br><br>💡 您可以在投票截止时间前修改投票，修改后再次提交即可。`;
             document.getElementById('successOverlay').classList.add('show');
 
             updateUI();
