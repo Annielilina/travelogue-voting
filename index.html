@@ -67,7 +67,8 @@
         .section { max-width: 1280px; margin: 0 auto; padding: 56px 24px; }
         .section-title { text-align: center; margin-bottom: 40px; }
         .section-title h2 { font-size: 30px; font-weight: 800; color: var(--primary); margin-bottom: 10px; }
-        .section-title p { color: var(--text-light); font-size: 15px; text-align: left; }
+        .section-title .vote-tips { color: var(--text-light); font-size: 15px; text-align: left; list-style-type: circle; padding-left: 30%; margin: 0 auto; max-width: 70%; line-height: 1.7; }
+        .section-title .vote-tips li { margin-bottom: 4px; }
         .section-title .divider { width: 60px; height: 4px; background: linear-gradient(90deg, var(--accent), #FFD700); border-radius: 2px; margin: 14px auto 0; }
         .awards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
         .award-card {
@@ -261,7 +262,10 @@
     <div class="section" style="padding-top: 0;">
         <div class="section-title">
             <h2>📖 游记作品投票区</h2>
-            <p>1. 点击 "打开游记" 可查看完整游记内容。选定奖项（共4个）后，点击"提交投票"按钮即完成投票。<br>2. 投票成功后，如需更改，请在截止时间前点击 "修改投票" 按钮重新提交（仅限修改1次）。</p>
+            <ul class="vote-tips">
+                <li>点击 "打开游记" 可查看完整游记内容。选定奖项（共4个）后，点击"提交投票"按钮即完成投票。</li>
+                <li>投票成功后，如需更改，请在截止时间前点击 "修改投票" 按钮重新提交（仅限修改1次）。</li>
+            </ul>
             <div class="divider"></div>
         </div>
         <div class="filter-bar">
